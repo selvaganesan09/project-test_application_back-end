@@ -1,0 +1,88 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String
+  hash      String?
+  firstName String?
+  lastName  String?
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String?
+  link        String
+}
+
+model Post {
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  title             String
+  author            String
+  authorImage       String
+  authorDescription String
+  featuredImage     String
+  description       String
+  category          String
+  tags              String
+  keywords          String
+  readingTime       String
+  aboutImage        String
+  content           String
+  slug              String   @unique
+}
+
+model Page {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  pageName    String
+  pageSection PageSection[]
+}
+
+model PageSection {
+  id          Int          @id @default(autoincrement())
+  sectionName String
+  subsection  SubSection[]
+  Page        Page?        @relation(fields: [pageId], references: [id])
+  pageId      Int?
+}
+
+model SubSection {
+  id            Int          @id @default(autoincrement())
+  key           String
+  value         String
+  PageSection   PageSection? @relation(fields: [pageSectionId], references: [id])
+  pageSectionId Int?
+}
+
+model PageTree {
+  id                Int                 @id @default(autoincrement())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now()) @updatedAt
+  slug              String
+  title             String
+  PageTreeKeyValues PageTreeKeyValues[]
+}
+
+model PageTreeKeyValues {
+  id         Int       @id @default(autoincrement())
+  key        String
+  value      Json?
+  PageTree   PageTree? @relation(fields: [pageTreeId], references: [id])
+  pageTreeId Int?
+}
